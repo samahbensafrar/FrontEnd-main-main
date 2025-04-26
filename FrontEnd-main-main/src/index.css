@@ -700,4 +700,167 @@ textarea {
   font-size: 0.9rem;
   font-weight: 500;
 }
+.readonly-input {
+  background-color: #ebe5e5; 
+  border: 1px solid #ddd;  
+  color: #666; 
+}
 
+.readonly-input:disabled {
+  background-color: #ccc9c9; 
+}
+
+button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+.profilecontainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+.profile-title {
+  margin-bottom: 20px;
+  color: #123c74;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  width: 400px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 10px;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-username {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.profile-username h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.edit-icon {
+  cursor: pointer;
+  font-size: 20px;
+  color: #123c74;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.detail-label {
+  font-weight: bold;
+  color: #123c74;
+}
+
+.detail-value {
+  color: #333;
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+
+.cancel-button {
+  background-color: #cac2c2;
+  color: rgb(97, 90, 90);
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 120px;
+}
+.save-button {
+  background-color: #103c88;
+  color: #ffffff;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 120px;
+}
+
+.save-button:hover {
+  background-color: #0f2a5a; /* darker blue on hover */
+}
+
+.cancel-button:hover{
+  background-color: #ccc;
+  color: black;
+}
+.avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.avatar-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #123c74;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.info-input {
+  width: 100%;
+  padding: 10px 15px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.info-input:focus {
+  border-color: #123c74;
+  background-color: #fff;
+}
+.editt{
+  color: #103c88;
+}
+.editt{
+  cursor: pointer;
+}

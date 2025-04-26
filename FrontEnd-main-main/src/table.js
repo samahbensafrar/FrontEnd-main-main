@@ -16,17 +16,46 @@ const ROLE_TO_REGION = {
   8: "Afroun",
 };
 
-const Table = ({ data }) => {
+const Table = ({ searchTerm }) => {
     const navigate = useNavigate();
+    const { user } = useAuth();  
+    const [clients, setClients] = useState([]);
+    const [filteredClients, setFilteredClients] = useState([]);
 
-    const normalize = (str) => str?.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const normalize = (str) =>
+        str?.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    useEffect(() => {
+        axios.get("http://127.0.0.1:8000/api/clients/")
+            .then(response => {
+                setClients(response.data);
+            })
+            .catch(error => console.error("Error fetching clients:", error));
+    }, []);
+
+    useEffect(() => {
+        const region = ROLE_TO_REGION[user.role];
+        const regionFiltered = region
+            ? clients.filter(client => client.region === region)
+            : clients;
+
+        const searchFiltered = regionFiltered.filter(client =>
+            normalize(client.name).includes(normalize(searchTerm)) ||
+            normalize(client.etat).includes(normalize(searchTerm)) ||
+            normalize(client.client_type).includes(normalize(searchTerm))
+        );
+
+        setFilteredClients(searchFiltered);
+    }, [clients, user.role, searchTerm]);
 
     const getEtatStyle = (etat) => {
         const cleanEtat = normalize(etat);
         switch (cleanEtat) {
             case "non traite":
+            case "non traité":
                 return { color: "red" };
             case "payment regle":
+            case "payment réglé":
                 return { color: "#4caf50" };
             default:
                 return { color: "#0A2364" };
@@ -48,7 +77,7 @@ const Table = ({ data }) => {
                 </tr>
             </thead>
             <tbody>
-                {data.length > 0 ? data.map(client => (
+                {filteredClients.length > 0 ? filteredClients.map(client => (
                     <tr key={client.id}>
                         <td>{client.client_id}</td>
                         <td>{client.name}</td>
@@ -74,4 +103,5 @@ const Table = ({ data }) => {
 };
 
 export default Table;
+
 

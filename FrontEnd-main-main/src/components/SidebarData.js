@@ -12,10 +12,10 @@ export const SidebarData = [
         link: "/Dashboard",
     },
     {
-            title: "Employees",
-            icon: <GroupsIcon />,
-            link: "/LesEmployees",
-            adminOnly: true  // only admin sees this
+        title: "Employees",
+        icon: <GroupsIcon />,
+        link: "/LesEmployees",
+        adminOnly: true
     },
     {
         title: "Listes des clients",
@@ -25,11 +25,11 @@ export const SidebarData = [
     {
         title: "Profile",
         icon: <PersonIcon />,
-        link: "/profile/:id",
+        link: "/profile",   
     },
     {
         title: "Logout",
         icon: <LogoutIcon />,
-        link: "/logout",  // <-- Important! This triggers logout in Sidebar.js
+        link: "/logout",
     }
 ];

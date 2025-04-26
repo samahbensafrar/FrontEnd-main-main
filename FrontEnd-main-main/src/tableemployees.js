@@ -1,7 +1,9 @@
 import React from "react";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
+import PersonIcon from '@mui/icons-material/Person';
+import { useNavigate } from "react-router-dom";
+
 const ROLE_LABELS = {
   1: "Admin",
   2: "Responsable de Boufarik",
@@ -13,7 +15,13 @@ const ROLE_LABELS = {
   8: "Responsable de Afroun"
 };
 
-const Tableemployees = ({ employees = [], onPasswordChange, onDelete }) => {
+const Tableemployees = ({ employees = [], onDelete }) => {
+  const navigate = useNavigate();
+
+  const handleEdit = (id) => {
+    navigate(`/profile/${id}`);
+  };
+
   return (
     <div>
       <table>
@@ -33,17 +41,15 @@ const Tableemployees = ({ employees = [], onPasswordChange, onDelete }) => {
                 <td>{employee.id}</td>
                 <td>{employee.username}</td>
                 <td>{employee.phone_number}</td>
-                <td> {ROLE_LABELS[employee.role] || "Rôle inconnu"}</td>
+                <td>{ROLE_LABELS[employee.role] || "Rôle inconnu"}</td>
                 <td>
                   <div className="editingIcons">
-            
-                  <IconButton className="edit-icon-first" onClick={() => onDelete(employee)}>
-                   <DeleteIcon sx={{ color: "#233e83" }} />
-                  </IconButton>
+                    <IconButton className="edit-icon-first" onClick={() => onDelete(employee)}>
+                      <DeleteIcon sx={{ color: "#233e83" }} />
+                    </IconButton>
 
-  
-                    <IconButton className="edit-icon" onClick={() => onPasswordChange(employee.id)}>
-                      <EditIcon sx={{ color: "#233e83" }} />
+                    <IconButton className="edit-icon" onClick={() => handleEdit(employee.id)}>
+                      <PersonIcon sx={{ color: "#233e83" }} />
                     </IconButton>
                   </div>
                 </td>

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams  } from "react-router-dom";
-import dataList from "./data/Employees.json";
+import { useParams } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import { useAuth } from "./AuthContext";
-import "./index.css"; 
+import "./index.css";
+import EditIcon from '@mui/icons-material/Edit';
+
 const ROLE_LABELS = {
   1: "Admin",
   2: "Responsable de Boufarik",
@@ -16,46 +17,181 @@ const ROLE_LABELS = {
   7: "Responsable de Bougara",
   8: "Responsable de Afroun"
 };
+
 const Profile = () => {
-  const { logout, user } = useAuth();
+  const { user } = useAuth();
   const { id } = useParams();
-  const [employee,setEmployee]= useState() ;
+  const [employee, setEmployee] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+
   useEffect(() => {
-    const fetchEmployees = async () => {
-        try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/users/by-username/${user.username}`);
-          setEmployee(response.data || []);
-        
-        } catch (error) {
-            console.error("Error fetching employees:", error);
-        }
+    const fetchEmployee = async () => {
+      try {
+        const response = id
+          ? await axios.get(`http://127.0.0.1:8000/api/users/${id}`)
+          : await axios.get(`http://127.0.0.1:8000/api/users/by-username/${user.username}`);
+
+        setEmployee({
+          ...response.data,
+          password: "", // Clear password for form input only
+        });
+      } catch (error) {
+        console.error("Error fetching employee:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchEmployees();
-}, []);
 
+    fetchEmployee();
+  }, [id, user.username]);
 
-  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEmployee((prev) => ({
+      ...prev,
+      [name]: name === "role" ? Number(value) : value
+    }));
+  };
+
+  const handleSave = async () => {
+    try {
+      const { password, username, phone_number, role, ...rest } = employee;
+
+      const payload = {
+        username: username.trim(),
+        phone_number: phone_number.trim(),
+        role,
+        ...rest
+      };
+
+      if (password && password.trim() !== "") {
+        payload.password = password;
+      }
+
+      await axios.patch(`http://127.0.0.1:8000/api/users/${employee.id}/`, payload);
+      alert("Informations mises à jour avec succès !");
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour:", error);
+      alert("Erreur lors de la mise à jour.");
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    // Fetch the employee data again to reset changes
+    const fetchEmployee = async () => {
+      const response = await axios.get(`http://127.0.0.1:8000/api/users/${employee.id}`);
+      setEmployee({
+        ...response.data,
+        password: "", // Clear password for form input only
+      });
+    };
+    fetchEmployee();
+  };
+
+  if (loading) {
+    return <p>Chargement...</p>;
+  }
+
   return (
     <>
       <Sidebar />
       <Navbar />
       <div className="profilecontainer">
-        <h1 className="profile-title">Profile</h1>
+        <h1 className="profile-title">Profil</h1>
         {employee ? (
           <div className="profile-card">
+            <div className="profile-header">
+            <div className="avatar">
+                <img 
+                  src="https://www.w3schools.com/w3images/avatar2.png" 
+                  alt="Avatar" 
+                  className="avatar-image"
+                />
+              </div>
+
+              <div className="username">
+                <h2>{employee.username}</h2>
+                <EditIcon className="editt" onClick={() => setIsEditing(true)} />
+              </div>
+            </div>
+
             <div className="profile-info">
-              <div className="info-item">
-                <span className="info-label">Nom</span>
-                <span className="info-value">{employee.username}</span>
-              </div>
-              <div className="info-item">
-                <span className="info-label">Numéro de téléphone</span>
-                <span className="info-value">{employee.phone_number}</span>
-              </div>
-              <div className="info-item">
-                <span className="info-label">Rôle</span>
-                <span className="info-value">{ROLE_LABELS[employee.role] || "Rôle inconnu"}</span>
-              </div>
+              {isEditing ? (
+                <>
+                  <div className="info-item">
+                    <span className="info-label">Nom</span>
+                    <input
+                      type="text"
+                      name="username"
+                      className="info-input"
+                      value={employee.username || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Numéro de téléphone</span>
+                    <input
+                      type="text"
+                      name="phone_number"
+                      className="info-input"
+                      value={employee.phone_number || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Mot de passe</span>
+                    <input
+                      type="password"
+                      name="password"
+                      className="info-input"
+                      value={employee.password || ""}
+                      onChange={handleChange}
+                      placeholder="Laisser vide pour ne pas changer"
+                    />
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Rôle</span>
+                    {user.role === 1 ? (
+                      <select
+                        name="role"
+                        className="info-input"
+                        value={employee.role}
+                        onChange={handleChange}
+                      >
+                        {Object.entries(ROLE_LABELS).map(([key, label]) => (
+                          <option key={key} value={Number(key)}>
+                            {label}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span className="info-value">{ROLE_LABELS[employee.role] || "Rôle inconnu"}</span>
+                    )}
+                  </div>
+                  <div className="buttons">
+                    <button className="save-button" onClick={handleSave}>Sauvegarder</button>
+                    <button className="cancel-button" onClick={handleCancel}>Annuler</button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="info-item">
+                    <span className="info-label">Nom :</span>
+                    <span className="info-value">{employee.username}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Numéro de téléphone :</span>
+                    <span className="info-value">{employee.phone_number}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Rôle :</span>
+                    <span className="info-value">{ROLE_LABELS[employee.role] || "Rôle inconnu"}</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         ) : (
